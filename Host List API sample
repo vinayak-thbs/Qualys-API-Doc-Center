@@ -1,0 +1,23 @@
+# Using this i am trying to list down all the virtual ipaddress ( ^10 ) present at qualys using Qualys api in python
+
+import json
+import subprocess
+import argparse
+import requests
+import os
+import csv
+import pandas as pd
+import xmltodict
+
+qualys_url = "https://<your_qualys_host>/api/2.0/fo/asset/ip/"
+dict_params = {'action': 'list','truncation_limit':'100000','details':'Basic'}
+
+dict_headers = {'X-Requested-With': 'Curl'}
+output = requests.get(qualys_url, params=dict_params, headers=dict_headers, auth=(<username>, <password>))
+response=xmltodict.parse(output.text)
+json_data=json.dumps(res)
+host_list=set()
+
+for x in response['HOST_LIST_OUTPUT']['RESPONSE']['HOST_LIST']['HOST']:
+    if str(x['IP']).startswith("10.") and x['TRACKING_METHOD'] == "Cloud Agent":
+        host_list.add(x['IP'])
